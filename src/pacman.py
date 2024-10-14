@@ -12,18 +12,15 @@ Exercises
 from random import choice
 from turtle import *
 from freegames import floor, vector
+from agents.HumanAgent import HumanPacman
 
+tile_size = 20
+empty_tile = 2
 state = {'score': 0}
 path = Turtle(visible=False)
 writer = Turtle(visible=False)
 aim = vector(5, 0)
-pacman = vector(-40, -80)
-ghosts = [
-    [vector(-180, 160), vector(5, 0)],
-    [vector(-180, -160), vector(0, 5)],
-    [vector(100, 160), vector(0, -5)],
-    [vector(100, -160), vector(-5, 0)],
-]
+
 # fmt: off
 tiles = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -78,16 +75,16 @@ def offset(point):
 def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
-
     if tiles[index] == 0:
         return False
 
     index = offset(point + 19)
-
     if tiles[index] == 0:
         return False
-
-    return point.x % 20 == 0 or point.y % 20 == 0
+    
+    is_in_column = point.y % tile_size == 0
+    is_in_row = point.x % tile_size == 0
+    return is_in_row or is_in_column
 
 def world():
     """Draw world using path."""
@@ -114,21 +111,18 @@ def move():
 
     clear()
 
-    if valid(pacman + aim):
-        pacman.move(aim)
-
-    index = offset(pacman)
+    index = offset(pacman.position)
 
     if tiles[index] == 1:
-        tiles[index] = 2
+        tiles[index] = empty_tile
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
         square(x, y)
 
     up()
-    goto(pacman.x + 10, pacman.y + 10)
-    dot(20, 'yellow')
+    goto(pacman.position.x + 10, pacman.position.y + 10)
+    dot(tile_size, 'yellow')
 
     if state['score'] == maxScore:
         end_game("You won!", "yellow")
@@ -150,12 +144,12 @@ def move():
 
         up()
         goto(point.x + 10, point.y + 10)
-        dot(20, 'red')
+        dot(tile_size, 'red')
 
     update()
 
     for point, course in ghosts:
-        if abs(pacman - point) < 20:
+        if abs(pacman.position - point) < 20:
             end_game("You lost!", "red")
             return
 
@@ -167,12 +161,13 @@ def end_game(message, tcolor):
     writer.color(tcolor)
     writer.write(message, font=("Verdana", 16, "bold"))
 
-def change(x, y):
-    """Change pacman aim if valid."""
-    if valid(pacman + vector(x, y)):
-        aim.x = x
-        aim.y = y
-
+pacman = HumanPacman(vector(-40, -80), valid)
+ghosts = [
+    [vector(-180, 160), vector(5, 0)],
+    [vector(-180, -160), vector(0, 5)],
+    [vector(100, 160), vector(0, -5)],
+    [vector(100, -160), vector(-5, 0)],
+]
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
@@ -180,10 +175,10 @@ writer.goto(160, 160)
 writer.color('white')
 writer.write(state['score'])
 listen()
-onkey(lambda: change(5, 0), 'Right')
-onkey(lambda: change(-5, 0), 'Left')
-onkey(lambda: change(0, 5), 'Up')
-onkey(lambda: change(0, -5), 'Down')
+onkey(lambda: pacman.right(), 'Right')
+onkey(lambda: pacman.left(), 'Left')
+onkey(lambda: pacman.up(), 'Up')
+onkey(lambda: pacman.down(), 'Down')
 world()
 move()
 done()
