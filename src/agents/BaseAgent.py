@@ -24,4 +24,6 @@ class BaseAgent:
     def right(self):
         self.__move(5, 0)
 
+    def step(self, game_state):
+        pass
     

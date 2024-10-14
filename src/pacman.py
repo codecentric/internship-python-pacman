@@ -12,7 +12,7 @@ Exercises
 from random import choice
 from turtle import *
 from freegames import floor, vector
-from agents.HumanAgent import HumanPacman
+from agents.HumanPacman import HumanPacman
 
 tile_size = 20
 empty_tile = 2
@@ -146,6 +146,8 @@ def move():
         goto(point.x + 10, point.y + 10)
         dot(tile_size, 'red')
 
+    pacman.step(None)
+
     update()
 
     for point, course in ghosts:
@@ -157,6 +159,7 @@ def move():
 
 
 def end_game(message, tcolor):
+    writer = Turtle(visible=False)
     writer.goto(-40, 180)
     writer.color(tcolor)
     writer.write(message, font=("Verdana", 16, "bold"))
@@ -175,10 +178,6 @@ writer.goto(160, 160)
 writer.color('white')
 writer.write(state['score'])
 listen()
-onkey(lambda: pacman.right(), 'Right')
-onkey(lambda: pacman.left(), 'Left')
-onkey(lambda: pacman.up(), 'Up')
-onkey(lambda: pacman.down(), 'Down')
 world()
 move()
 done()
