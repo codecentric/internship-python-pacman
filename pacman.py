@@ -49,6 +49,12 @@ tiles = [
 ]
 # fmt: on
 
+maxScore = 0
+
+for i in tiles:
+    if i == 1:
+        maxScore+= 1
+
 def square(x, y):
     """Draw square using path at (x, y)."""
     path.up()
@@ -124,6 +130,10 @@ def move():
     goto(pacman.x + 10, pacman.y + 10)
     dot(20, 'yellow')
 
+    if state['score'] == maxScore:
+        end_game("You won!", "yellow")
+        return
+
     for point, course in ghosts:
         if valid(point + course):
             point.move(course)
@@ -146,9 +156,16 @@ def move():
 
     for point, course in ghosts:
         if abs(pacman - point) < 20:
+            end_game("You lost!", "red")
             return
 
     ontimer(move, 50)
+
+
+def end_game(message, tcolor):
+    writer.goto(-40, 180)
+    writer.color(tcolor)
+    writer.write(message, font=("Verdana", 16, "bold"))
 
 def change(x, y):
     """Change pacman aim if valid."""
