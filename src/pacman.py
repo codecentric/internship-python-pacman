@@ -4,59 +4,20 @@ from random import choice
 from turtle import *
 from freegames import floor, vector
 from agents.HumanPacman import HumanPacman
+from WorldRendering import WorldRendering
+from Mazes import Mazes
 
-MAZE_WRITER = Turtle(visible=False)
-STATE_WRITER = Turtle(visible=False)
+WRITER = Turtle(visible=False)
 VERDANA_BOLD = ("Verdana", 16, "bold")
 
 TILE_SIZE = 20
 EMPTY_TILE = 2
+MAZES = Mazes
+MAZE = MAZES.level_1
+MAX_SCORE = Mazes.level_1_max_score
+WORLD = WorldRendering(MAZE)
 
 state = {'score': 0}
-
-# fmt: off
-maze = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0,
-    0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
-    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-]
-# fmt: on
-
-max_score = 0
-
-for i in maze:
-    if i == 1:
-        max_score+= 1
-
-# Draw square using path at (x, y).
-def square(x, y):
-    MAZE_WRITER.up()
-    MAZE_WRITER.goto(x, y)
-    MAZE_WRITER.down()
-    MAZE_WRITER.begin_fill()
-
-    for count in range(4):
-        MAZE_WRITER.forward(20)
-        MAZE_WRITER.left(90)
-
-    MAZE_WRITER.end_fill()
 
 # Return offset of point in tiles.
 def offset(point):
@@ -68,56 +29,36 @@ def offset(point):
 # Return True if point is valid in tiles.
 def valid(point):
     index = offset(point)
-    if maze[index] == 0:
+    if MAZE[index] == 0:
         return False
 
     index = offset(point + 19)
-    if maze[index] == 0:
+    if MAZE[index] == 0:
         return False
     
     is_in_column = point.y % TILE_SIZE == 0
     is_in_row = point.x % TILE_SIZE == 0
     return is_in_row or is_in_column
 
-# Draw world using path.
-def world():
-    bgcolor('black')
-    MAZE_WRITER.color('blue')
-
-    for index in range(len(maze)):
-        tile = maze[index]
-
-        if tile > 0:
-            x = (index % 20) * 20 - 200
-            y = 180 - (index // 20) * 20
-            square(x, y)
-
-            if tile == 1:
-                MAZE_WRITER.up()
-                MAZE_WRITER.goto(x + 10, y + 10)
-                MAZE_WRITER.dot(2, 'white')
-
 # Move pacman and all ghosts.
 def move():
-    STATE_WRITER.undo()
-    STATE_WRITER.write(state['score'], font = VERDANA_BOLD)
-
     clear()
-
     index = offset(pacman.position)
 
-    if maze[index] == 1:
-        maze[index] = EMPTY_TILE
+    if MAZE[index] == 1:
+        MAZE[index] = EMPTY_TILE
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
-        square(x, y)
+        WORLD.draw_square(x, y)
 
+    WRITER.undo()
+    WRITER.write(state['score'], font = VERDANA_BOLD)
     up()
     goto(pacman.position.x + 10, pacman.position.y + 10)
     dot(TILE_SIZE, 'yellow')
 
-    if state['score'] == max_score:
+    if state['score'] == MAX_SCORE:
         end_game("You won!", "yellow")
         return
 
@@ -148,17 +89,16 @@ def move():
             end_game("You lost!", "red")
             return
 
-    ontimer(move, 50)
+    ontimer(move, 100)
 
 def end_game(message, tcolor):
-    STATE_WRITER.penup()
-    STATE_WRITER.goto(0, 180)
-    STATE_WRITER.color(tcolor)
-    STATE_WRITER.pendown()
-    STATE_WRITER.write(message, align="center", font = VERDANA_BOLD)
+    WRITER.penup()
+    WRITER.goto(0, 180)
+    WRITER.color(tcolor)
+    WRITER.pendown()
+    WRITER.write(message, align="center", font = VERDANA_BOLD)
 
 pacman = HumanPacman(vector(-40, -80), valid)
-aim = vector(5, 0)
 ghosts = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
@@ -169,10 +109,10 @@ ghosts = [
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
-STATE_WRITER.goto(160, 160)
-STATE_WRITER.color('white')
-STATE_WRITER.write(state['score'], font = VERDANA_BOLD)
+WRITER.goto(160, 160)
+WRITER.color('white')
+WRITER.write(state['score'], font = VERDANA_BOLD)
 listen()
-world()
+WORLD.world()
 move()
 done()
