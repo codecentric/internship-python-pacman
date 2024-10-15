@@ -1,27 +1,18 @@
-"""Pacman, classic arcade game.
-
-Exercises
-
-1. Change the board.
-2. Change the number of ghosts.
-3. Change where pacman starts.
-4. Make the ghosts faster/slower.
-5. Make the ghosts smarter.
-"""
+# Pacman, classic arcade game.
 
 from random import choice
 from turtle import *
 from freegames import floor, vector
 from agents.HumanPacman import HumanPacman
 
+MAZE_WRITER = Turtle(visible=False)
+STATE_WRITER = Turtle(visible=False)
 VERDANA_BOLD = ("Verdana", 16, "bold")
 
-tile_size = 20
-empty_tile = 2
+TILE_SIZE = 20
+EMPTY_TILE = 2
+
 state = {'score': 0}
-path = Turtle(visible=False)
-writer = Turtle(visible=False)
-aim = vector(5, 0)
 
 # fmt: off
 maze = [
@@ -48,34 +39,34 @@ maze = [
 ]
 # fmt: on
 
-maxScore = 0
+max_score = 0
 
 for i in maze:
     if i == 1:
-        maxScore+= 1
+        max_score+= 1
 
+# Draw square using path at (x, y).
 def square(x, y):
-    """Draw square using path at (x, y)."""
-    path.up()
-    path.goto(x, y)
-    path.down()
-    path.begin_fill()
+    MAZE_WRITER.up()
+    MAZE_WRITER.goto(x, y)
+    MAZE_WRITER.down()
+    MAZE_WRITER.begin_fill()
 
     for count in range(4):
-        path.forward(20)
-        path.left(90)
+        MAZE_WRITER.forward(20)
+        MAZE_WRITER.left(90)
 
-    path.end_fill()
+    MAZE_WRITER.end_fill()
 
+# Return offset of point in tiles.
 def offset(point):
-    """Return offset of point in tiles."""
     x = (floor(point.x, 20) + 200) / 20
     y = (180 - floor(point.y, 20)) / 20
     index = int(x + y * 20)
     return index
 
+# Return True if point is valid in tiles.
 def valid(point):
-    """Return True if point is valid in tiles."""
     index = offset(point)
     if maze[index] == 0:
         return False
@@ -84,14 +75,14 @@ def valid(point):
     if maze[index] == 0:
         return False
     
-    is_in_column = point.y % tile_size == 0
-    is_in_row = point.x % tile_size == 0
+    is_in_column = point.y % TILE_SIZE == 0
+    is_in_row = point.x % TILE_SIZE == 0
     return is_in_row or is_in_column
 
+# Draw world using path.
 def world():
-    """Draw world using path."""
     bgcolor('black')
-    path.color('blue')
+    MAZE_WRITER.color('blue')
 
     for index in range(len(maze)):
         tile = maze[index]
@@ -102,21 +93,21 @@ def world():
             square(x, y)
 
             if tile == 1:
-                path.up()
-                path.goto(x + 10, y + 10)
-                path.dot(2, 'white')
+                MAZE_WRITER.up()
+                MAZE_WRITER.goto(x + 10, y + 10)
+                MAZE_WRITER.dot(2, 'white')
 
+# Move pacman and all ghosts.
 def move():
-    """Move pacman and all ghosts."""
-    writer.undo()
-    writer.write(state['score'], font = VERDANA_BOLD)
+    STATE_WRITER.undo()
+    STATE_WRITER.write(state['score'], font = VERDANA_BOLD)
 
     clear()
 
     index = offset(pacman.position)
 
     if maze[index] == 1:
-        maze[index] = empty_tile
+        maze[index] = EMPTY_TILE
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
@@ -124,9 +115,9 @@ def move():
 
     up()
     goto(pacman.position.x + 10, pacman.position.y + 10)
-    dot(tile_size, 'yellow')
+    dot(TILE_SIZE, 'yellow')
 
-    if state['score'] == maxScore:
+    if state['score'] == max_score:
         end_game("You won!", "yellow")
         return
 
@@ -146,7 +137,7 @@ def move():
 
         up()
         goto(point.x + 10, point.y + 10)
-        dot(tile_size, 'red')
+        dot(TILE_SIZE, 'red')
 
     pacman.step(None)
 
@@ -160,13 +151,14 @@ def move():
     ontimer(move, 50)
 
 def end_game(message, tcolor):
-    writer.penup()
-    writer.goto(0, 180)
-    writer.color(tcolor)
-    writer.pendown()
-    writer.write(message, align="center", font = VERDANA_BOLD)
+    STATE_WRITER.penup()
+    STATE_WRITER.goto(0, 180)
+    STATE_WRITER.color(tcolor)
+    STATE_WRITER.pendown()
+    STATE_WRITER.write(message, align="center", font = VERDANA_BOLD)
 
 pacman = HumanPacman(vector(-40, -80), valid)
+aim = vector(5, 0)
 ghosts = [
     [vector(-180, 160), vector(5, 0)],
     [vector(-180, -160), vector(0, 5)],
@@ -177,9 +169,9 @@ ghosts = [
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
-writer.goto(160, 160)
-writer.color('white')
-writer.write(state['score'], font = VERDANA_BOLD)
+STATE_WRITER.goto(160, 160)
+STATE_WRITER.color('white')
+STATE_WRITER.write(state['score'], font = VERDANA_BOLD)
 listen()
 world()
 move()

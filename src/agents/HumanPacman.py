@@ -1,7 +1,6 @@
 from . import BaseAgent
 from turtle import onkey
 
-
 class HumanPacman(BaseAgent.BaseAgent):
     
     def step(self, game_state):

@@ -17,7 +17,7 @@ The simple implementation of the game has some limitations in comparison to the 
 - There are no power pellets that strengthen Pac-man to eat ghosts to temporarily lock them up at their starting position in the middle of the map.
 - There are no fruits.
 - There are no portals to jump from one side of the screen to the other.
-- Ghosts are very stupid and only take random steps.
+- Ghosts are stupid and will only change to a randomly selected direction if they run into a wall.
 - There is only one level.
 
 ## Setup
