@@ -14,6 +14,8 @@ from turtle import *
 from freegames import floor, vector
 from agents.HumanPacman import HumanPacman
 
+VERDANA_BOLD = ("Verdana", 16, "bold")
+
 tile_size = 20
 empty_tile = 2
 state = {'score': 0}
@@ -22,7 +24,7 @@ writer = Turtle(visible=False)
 aim = vector(5, 0)
 
 # fmt: off
-tiles = [
+maze = [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0,
     0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
@@ -48,7 +50,7 @@ tiles = [
 
 maxScore = 0
 
-for i in tiles:
+for i in maze:
     if i == 1:
         maxScore+= 1
 
@@ -75,11 +77,11 @@ def offset(point):
 def valid(point):
     """Return True if point is valid in tiles."""
     index = offset(point)
-    if tiles[index] == 0:
+    if maze[index] == 0:
         return False
 
     index = offset(point + 19)
-    if tiles[index] == 0:
+    if maze[index] == 0:
         return False
     
     is_in_column = point.y % tile_size == 0
@@ -91,8 +93,8 @@ def world():
     bgcolor('black')
     path.color('blue')
 
-    for index in range(len(tiles)):
-        tile = tiles[index]
+    for index in range(len(maze)):
+        tile = maze[index]
 
         if tile > 0:
             x = (index % 20) * 20 - 200
@@ -107,14 +109,14 @@ def world():
 def move():
     """Move pacman and all ghosts."""
     writer.undo()
-    writer.write(state['score'])
+    writer.write(state['score'], font = VERDANA_BOLD)
 
     clear()
 
     index = offset(pacman.position)
 
-    if tiles[index] == 1:
-        tiles[index] = empty_tile
+    if maze[index] == 1:
+        maze[index] = empty_tile
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
@@ -157,12 +159,12 @@ def move():
 
     ontimer(move, 50)
 
-
 def end_game(message, tcolor):
-    writer = Turtle(visible=False)
-    writer.goto(-40, 180)
+    writer.penup()
+    writer.goto(0, 180)
     writer.color(tcolor)
-    writer.write(message, font=("Verdana", 16, "bold"))
+    writer.pendown()
+    writer.write(message, align="center", font = VERDANA_BOLD)
 
 pacman = HumanPacman(vector(-40, -80), valid)
 ghosts = [
@@ -171,12 +173,13 @@ ghosts = [
     [vector(100, 160), vector(0, -5)],
     [vector(100, -160), vector(-5, 0)],
 ]
+
 setup(420, 420, 370, 0)
 hideturtle()
 tracer(False)
 writer.goto(160, 160)
 writer.color('white')
-writer.write(state['score'])
+writer.write(state['score'], font = VERDANA_BOLD)
 listen()
 world()
 move()
