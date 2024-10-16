@@ -11,9 +11,10 @@ WRITER = Turtle(visible=False)
 VERDANA_BOLD = ("Verdana", 16, "bold")
 
 TILE_SIZE = 20
-EMPTY_TILE = 2
-MAZES = Mazes
-MAZE = MAZES.level_1
+TILE_WALL = 0
+TILE_DOT = 1
+TILE_EMPTY = 2
+MAZE = Mazes.level_1
 MAX_SCORE = Mazes.level_1_max_score
 WORLD = WorldRendering(MAZE)
 
@@ -29,11 +30,11 @@ def offset(point):
 # Return True if point is valid in tiles.
 def valid(point):
     index = offset(point)
-    if MAZE[index] == 0:
+    if MAZE[index] == TILE_WALL:
         return False
 
     index = offset(point + 19)
-    if MAZE[index] == 0:
+    if MAZE[index] == TILE_WALL:
         return False
     
     is_in_column = point.y % TILE_SIZE == 0
@@ -45,8 +46,8 @@ def move():
     clear()
     index = offset(pacman.position)
 
-    if MAZE[index] == 1:
-        MAZE[index] = EMPTY_TILE
+    if MAZE[index] == TILE_DOT:
+        MAZE[index] = TILE_EMPTY
         state['score'] += 1
         x = (index % 20) * 20 - 200
         y = 180 - (index // 20) * 20
