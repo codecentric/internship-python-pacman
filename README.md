@@ -63,8 +63,9 @@ _Advanced:_ Give the ghosts their original names and colors.
 <details>
     <summary>Hints</summary>
 
-- The ghosts are defined in an array consisting of two vectors: One for the starting position and the second one for their initial direction.
-- Ghost names and colors:
+- The ghosts are initialised in an array in the `pacman.py`file.
+- Each ghost in the array is a `Ghost` object. Check out the respective `Ghost` class to find out more.
+- Original ghost names and colors:
   - Blinky: red
   - Pinky: pink
   - Inky: teal
@@ -74,25 +75,30 @@ _Advanced:_ Give the ghosts their original names and colors.
 
 ### (3) Make the ghosts take better decisions
 
+- Study the current decision-making of the ghosts. How do they decide which way to go?
+- The ghosts should _sense_ their surrounding for Pac-man. If Pac-man is within 3 tiles, they should chase him.
+- _Advanced:_ While chasing, the speed (moving distance) of the ghosts is slightly increased.
+- _Advanced:_ When losing sight, the speed (moving distance) of the ghosts is slightly decreased.
+
 <details>
     <summary>Hints</summary>
 
-- Study the original decision-making of the ghosts.
-- The ghosts should _sense_ their surrounding for Pac-man.
-- If Pac-man is within 3 tiles, they should chase him.
-- _Advanced:_ While chasing, the speed (moving distance) of the ghosts is slightly increased.
-- _Advanced:_ When losing sight, the speed (moving distance) of the ghosts is slightly decreased.
+- The code for the ghost agents is within the file `agents/Ghost.py`
+- The `step` method in the `Ghost` class is called each time the world is updated.
 
 </details>
 
 ### (4) Make Pac-man move autonomous
 
+- Pac-man should no longer be controlled by humans.
+- Implement an autonomous agent that controls Pac-man.
+- Pac-man should _sense_ his surrounding and avoid ghosts.
+- The agent must collect all pellets to win the game.
+
 <details>
     <summary>Hints</summary>
 
-- The Pac-man token should no longer be controlled by humanes.
-- Implement an autonomous agent that controls Pac-mans token.
-- The agent should _sense_ his surrounding for ghosts and avoid them.
-- The agent must know the position of all pellets and collect them to win the game.
-
+- Create a new Pacman agent class
+- Implement the `step(self, game_state)` method inside the new agent class, which decides for a direction based on the `game_state` parameter
+- Replace the old pac-man instance with an instance of your agent class
 </details>
