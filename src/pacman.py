@@ -55,17 +55,17 @@ def update_world():
     WRITER.write(state['score'], font = VERDANA_BOLD)
     WORLD.render_agent(pacman)
 
+    # move all agents
     for ghost in ghosts:
-        ghost.step(None)
+        ghost.step(get_agent_game_state(ghost))
         WORLD.render_agent(ghost)
-
-    pacman.step(None)
+    pacman.step(get_agent_game_state(pacman))
     update()
 
+    # check for game end
     if state['score'] == MAX_SCORE:
         end_game("You won!", "yellow")
         return
-    
     for ghost in ghosts:
         if abs(pacman.position - ghost.position) < 20:
             end_game("You lost!", "red")
@@ -79,6 +79,18 @@ def end_game(message, tcolor):
     WRITER.color(tcolor)
     WRITER.pendown()
     WRITER.write(message, align="center", font = VERDANA_BOLD)
+
+def get_agent_game_state(agent):
+    """Returns the part of the world that the given agent can see.
+    Currently, each agent has a complete view of the world.
+    """
+    agent_state = {}
+    agent_state['score'] = state['score']
+    agent_state['max_score'] = MAX_SCORE
+    agent_state["surrounding"] = MAZE
+    agent_state["pacman"] = pacman.position
+    agent_state["ghosts"] = [ghost.position for ghost in ghosts]
+    return agent_state
 
 
 pacman = HumanPacman(vector(-40, -80), valid)
