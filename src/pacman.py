@@ -8,7 +8,6 @@ from WorldRendering import *
 from Mazes import *
 
 WRITER = Turtle(visible=False)
-VERDANA_BOLD = ("Verdana", 16, "bold")
 
 MAZE = Mazes.level_1
 MAX_SCORE = Mazes.level_1_max_score
@@ -47,38 +46,27 @@ def update_world():
     if MAZE[index] == TILE_DOT:
         MAZE[index] = TILE_EMPTY
         state['score'] += 1
-        x = (index % 20) * 20 - 200
-        y = 180 - (index // 20) * 20
-        WORLD.draw_square(x, y)
-
-    WRITER.undo()
-    WRITER.write(state['score'], font = VERDANA_BOLD)
-    WORLD.render_agent(pacman)
+        WORLD.render_empty_tile(index)
+    WORLD.render_score(state["score"])
 
     # move all agents
     for ghost in ghosts:
         ghost.step(get_agent_game_state(ghost))
         WORLD.render_agent(ghost)
     pacman.step(get_agent_game_state(pacman))
+    WORLD.render_agent(pacman)
     update()
 
     # check for game end
     if state['score'] == MAX_SCORE:
-        end_game("You won!", "yellow")
+        WORLD.render_end_game("You won!", "yellow")
         return
     for ghost in ghosts:
         if abs(pacman.position - ghost.position) < 20:
-            end_game("You lost!", "red")
+            WORLD.render_end_game("You lost!", "red")
             return
 
     ontimer(update_world, 100)
-
-def end_game(message, tcolor):
-    WRITER.penup()
-    WRITER.goto(0, 180)
-    WRITER.color(tcolor)
-    WRITER.pendown()
-    WRITER.write(message, align="center", font = VERDANA_BOLD)
 
 def get_agent_game_state(agent):
     """Returns the part of the world that the given agent can see.
@@ -101,12 +89,9 @@ ghosts = [
     Ghost(vector(100, -160), valid),
 ]
 
-setup(420, 420, 370, 0)
+setup(420, 420, 370, 0) # window
 hideturtle()
 tracer(False)
-WRITER.goto(160, 160)
-WRITER.color('white')
-WRITER.write(state['score'], font = VERDANA_BOLD)
 listen()
 WORLD.world()
 update_world()

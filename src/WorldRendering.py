@@ -4,9 +4,11 @@ TILE_SIZE = 20
 
 class WorldRendering:
     WRITER = Turtle(visible=False)
+    SCORE_WRITER = Turtle(visible=False)
 
-    def __init__(self, maze):
+    def __init__(self, maze, font=("Verdana", 16, "bold")):
         self.maze = maze
+        self.font = font
 
     # Draw square using path at (x, y).
     def draw_square(self, x, y):
@@ -45,3 +47,21 @@ class WorldRendering:
         y = agent.position.y + 10
         goto(x, y)
         dot(TILE_SIZE, agent.color)
+
+    def render_empty_tile(self, index):
+        x = (index % 20) * 20 - 200
+        y = 180 - (index // 20) * 20
+        self.draw_square(x, y)
+
+    def render_score(self, score):
+        self.SCORE_WRITER.undo()
+        self.SCORE_WRITER.goto(160, 160)
+        self.SCORE_WRITER.color('white')
+        self.SCORE_WRITER.write(score, font=self.font)
+
+    def render_end_game(self, message, tcolor):
+        self.WRITER.penup()
+        self.WRITER.goto(0, 180)
+        self.WRITER.color(tcolor)
+        self.WRITER.pendown()
+        self.WRITER.write(message, align="center", font=self.font)
