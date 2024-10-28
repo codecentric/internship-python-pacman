@@ -1,5 +1,7 @@
 from turtle import *
 
+TILE_SIZE = 20
+
 class WorldRendering:
     WRITER = Turtle(visible=False)
 
@@ -36,3 +38,10 @@ class WorldRendering:
                     self.WRITER.up()
                     self.WRITER.goto(x + 10, y + 10)
                     self.WRITER.dot(2, 'white')
+
+    def render_agent(self, agent):
+        up()
+        x = agent.position.x + 10
+        y = agent.position.y + 10
+        goto(x, y)
+        dot(TILE_SIZE, agent.color)

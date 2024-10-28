@@ -1,3 +1,7 @@
+TILE_WALL = 0
+TILE_DOT = 1
+TILE_EMPTY = 2
+
 class Mazes:
     def __init__(self):
         pass

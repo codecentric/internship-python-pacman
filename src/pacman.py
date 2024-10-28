@@ -1,51 +1,49 @@
 # Pacman, classic arcade game.
 
-from random import choice
 from turtle import *
 from freegames import floor, vector
 from agents.HumanPacman import HumanPacman
-from WorldRendering import WorldRendering
-from Mazes import Mazes
+from agents.Ghost import Ghost
+from WorldRendering import *
+from Mazes import *
 
 WRITER = Turtle(visible=False)
 VERDANA_BOLD = ("Verdana", 16, "bold")
 
-TILE_SIZE = 20
-TILE_WALL = 0
-TILE_DOT = 1
-TILE_EMPTY = 2
 MAZE = Mazes.level_1
 MAX_SCORE = Mazes.level_1_max_score
 WORLD = WorldRendering(MAZE)
 
 state = {'score': 0}
 
-# Return offset of point in tiles.
 def offset(point):
+    """Return offset of point in tiles."""
     x = (floor(point.x, 20) + 200) / 20
     y = (180 - floor(point.y, 20)) / 20
     index = int(x + y * 20)
     return index
 
-# Return True if point is valid in tiles.
-def valid(point):
-    index = offset(point)
+def valid(position):
+    """Return True if the agent position is valid."""
+    index = offset(position)
     if MAZE[index] == TILE_WALL:
         return False
 
-    index = offset(point + 19)
+    index = offset(position + 19)
     if MAZE[index] == TILE_WALL:
         return False
     
-    is_in_column = point.y % TILE_SIZE == 0
-    is_in_row = point.x % TILE_SIZE == 0
+    is_in_column = position.y % TILE_SIZE == 0
+    is_in_row = position.x % TILE_SIZE == 0
     return is_in_row or is_in_column
 
-# Move pacman and all ghosts.
-def move():
+def update_world():
+    """Updates the world repeatedly until the game finishes. 
+    - Moves pacman and all ghosts.
+    - Checks if game is lost/won.
+    """
     clear()
     index = offset(pacman.position)
-
     if MAZE[index] == TILE_DOT:
         MAZE[index] = TILE_EMPTY
         state['score'] += 1
@@ -55,42 +53,25 @@ def move():
 
     WRITER.undo()
     WRITER.write(state['score'], font = VERDANA_BOLD)
-    up()
-    goto(pacman.position.x + 10, pacman.position.y + 10)
-    dot(TILE_SIZE, 'yellow')
+    WORLD.render_agent(pacman)
+
+    for ghost in ghosts:
+        ghost.step(None)
+        WORLD.render_agent(ghost)
+
+    pacman.step(None)
+    update()
 
     if state['score'] == MAX_SCORE:
         end_game("You won!", "yellow")
         return
-
-    for point, course in ghosts:
-        if valid(point + course):
-            point.move(course)
-        else:
-            options = [
-                vector(5, 0),
-                vector(-5, 0),
-                vector(0, 5),
-                vector(0, -5),
-            ]
-            plan = choice(options)
-            course.x = plan.x
-            course.y = plan.y
-
-        up()
-        goto(point.x + 10, point.y + 10)
-        dot(TILE_SIZE, 'red')
-
-    pacman.step(None)
-
-    update()
-
-    for point, course in ghosts:
-        if abs(pacman.position - point) < 20:
+    
+    for ghost in ghosts:
+        if abs(pacman.position - ghost.position) < 20:
             end_game("You lost!", "red")
             return
 
-    ontimer(move, 100)
+    ontimer(update_world, 100)
 
 def end_game(message, tcolor):
     WRITER.penup()
@@ -99,12 +80,13 @@ def end_game(message, tcolor):
     WRITER.pendown()
     WRITER.write(message, align="center", font = VERDANA_BOLD)
 
+
 pacman = HumanPacman(vector(-40, -80), valid)
 ghosts = [
-    [vector(-180, 160), vector(5, 0)],
-    [vector(-180, -160), vector(0, 5)],
-    [vector(100, 160), vector(0, -5)],
-    [vector(100, -160), vector(-5, 0)],
+    Ghost(vector(-180, 160), valid),
+    Ghost(vector(-180, -160), valid),
+    Ghost(vector(100, 160), valid),
+    Ghost(vector(100, -160), valid),
 ]
 
 setup(420, 420, 370, 0)
@@ -115,5 +97,5 @@ WRITER.color('white')
 WRITER.write(state['score'], font = VERDANA_BOLD)
 listen()
 WORLD.world()
-move()
+update_world()
 done()
