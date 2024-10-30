@@ -49,7 +49,7 @@ Create and design an additional maze for Pac-man and the ghosts
 <details>
     <summary>Hints</summary>
 
-- Study the original maze array in [pacman.py](src/pacman.py)
+- Study the original maze array in [Mazes.py](src/Mazes.py)
 - What is the meaning of 0 and 1 in the array?
 - Why is the array wrapped in lines of 20 values?
 
@@ -63,8 +63,8 @@ _Advanced:_ Give the ghosts their original names and colors.
 <details>
     <summary>Hints</summary>
 
-- The ghosts are initialised in an array in the `pacman.py`file.
-- Each ghost in the array is a `Ghost` object. Check out the respective `Ghost` class to find out more.
+- The ghosts are initialised in an array in the [pacman.py](src/pacman.py) file.
+- Each ghost in the array is a `Ghost` object. Check out the respective [Ghost](src/agents/Ghost.py) class to find out more.
 - Original ghost names and colors:
   - Blinky: red
   - Pinky: pink
@@ -83,7 +83,7 @@ _Advanced:_ Give the ghosts their original names and colors.
 <details>
     <summary>Hints</summary>
 
-- The code for the ghost agents is within the file `agents/Ghost.py`
+- The code for the ghost agents is within the file [agents/Ghost.py](src/agents/Ghost.py)
 - The `step` method in the `Ghost` class is called each time the world is updated.
 
 </details>

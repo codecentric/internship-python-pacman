@@ -3,7 +3,7 @@ import random
 
 class Ghost(BaseAgent.BaseAgent):
     course = None
-    color = 'red'
+    color = "red"
     
     def step(self, game_state):
         if self.course and self.valid(self.position + self.course):

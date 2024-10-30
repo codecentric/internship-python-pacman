@@ -1,6 +1,5 @@
 # Pacman, classic arcade game.
 
-from turtle import *
 from freegames import floor, vector
 from agents.HumanPacman import HumanPacman
 from agents.Ghost import Ghost
@@ -13,7 +12,7 @@ MAZE = Mazes.level_1
 MAX_SCORE = Mazes.level_1_max_score
 WORLD = WorldRendering(MAZE)
 
-state = {'score': 0}
+state = {"score": 0}
 
 def offset(point):
     """Return offset of point in tiles."""
@@ -45,7 +44,7 @@ def update_world():
     index = offset(pacman.position)
     if MAZE[index] == TILE_DOT:
         MAZE[index] = TILE_EMPTY
-        state['score'] += 1
+        state["score"] += 1
         WORLD.render_empty_tile(index)
     WORLD.render_score(state["score"])
 
@@ -58,7 +57,7 @@ def update_world():
     update()
 
     # check for game end
-    if state['score'] == MAX_SCORE:
+    if state["score"] == MAX_SCORE:
         WORLD.render_end_game("You won!", "yellow")
         return
     for ghost in ghosts:
@@ -73,8 +72,8 @@ def get_agent_game_state(agent):
     Currently, each agent has a complete view of the world.
     """
     agent_state = {}
-    agent_state['score'] = state['score']
-    agent_state['max_score'] = MAX_SCORE
+    agent_state["score"] = state["score"]
+    agent_state["max_score"] = MAX_SCORE
     agent_state["surrounding"] = MAZE
     agent_state["pacman"] = pacman.position
     agent_state["ghosts"] = [ghost.position for ghost in ghosts]

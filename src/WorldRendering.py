@@ -25,8 +25,8 @@ class WorldRendering:
 
     # Draw world using path.
     def world(self):
-        bgcolor('black')
-        self.WRITER.color('blue')
+        bgcolor("black")
+        self.WRITER.color("blue")
 
         for index in range(len(self.maze)):
             tile = self.maze[index]
@@ -39,7 +39,7 @@ class WorldRendering:
                 if tile == 1:
                     self.WRITER.up()
                     self.WRITER.goto(x + 10, y + 10)
-                    self.WRITER.dot(2, 'white')
+                    self.WRITER.dot(2, "white")
 
     def render_agent(self, agent):
         up()
@@ -56,7 +56,7 @@ class WorldRendering:
     def render_score(self, score):
         self.SCORE_WRITER.undo()
         self.SCORE_WRITER.goto(160, 160)
-        self.SCORE_WRITER.color('white')
+        self.SCORE_WRITER.color("white")
         self.SCORE_WRITER.write(score, font=self.font)
 
     def render_end_game(self, message, tcolor):
