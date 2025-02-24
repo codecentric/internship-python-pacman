@@ -8,6 +8,8 @@ class BaseAgent:
     LEFT = vector(-5, 0)
     RIGHT = vector(5, 0)
 
+    course = None
+
     def __init__(self, position, valid_function) -> None:
         self.position = position
         self.valid = valid_function
@@ -18,18 +20,6 @@ class BaseAgent:
             self.position.move(delta)
             return True
         return False
-
-    def down(self):
-        self._move(self.DOWN)
-
-    def up(self):
-        self._move(self.UP)
-
-    def left(self):
-        self._move(self.LEFT)
-
-    def right(self):
-        self._move(self.RIGHT)
 
     def step(self, game_state):
         pass
