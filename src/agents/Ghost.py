@@ -2,7 +2,6 @@ from . import BaseAgent
 import random
 
 class Ghost(BaseAgent.BaseAgent):
-    course = None
     color = "red"
     
     def step(self, game_state):
