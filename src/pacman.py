@@ -1,39 +1,9 @@
 # Pacman, classic arcade game.
 
-from freegames import floor, vector
 from agents.HumanPacman import HumanPacman
 from agents.Ghost import Ghost
 from WorldRendering import *
 from Mazes import *
-
-WRITER = Turtle(visible=False)
-
-MAZE = Mazes.level_1
-MAX_SCORE = Mazes.level_1_max_score
-WORLD = WorldRendering(MAZE)
-
-state = {"score": 0}
-
-def offset(point):
-    """Return offset of point in tiles."""
-    x = (floor(point.x, 20) + 200) / 20
-    y = (180 - floor(point.y, 20)) / 20
-    index = int(x + y * 20)
-    return index
-
-def valid(position):
-    """Return True if the agent position is valid."""
-    index = offset(position)
-    if MAZE[index] == TILE_WALL:
-        return False
-
-    index = offset(position + 19)
-    if MAZE[index] == TILE_WALL:
-        return False
-    
-    is_in_column = position.y % TILE_SIZE == 0
-    is_in_row = position.x % TILE_SIZE == 0
-    return is_in_row or is_in_column
 
 def update_world():
     """Updates the world repeatedly until the game finishes. 
@@ -41,9 +11,9 @@ def update_world():
     - Checks if game is lost/won.
     """
     clear()
-    index = offset(pacman.position)
-    if MAZE[index] == TILE_DOT:
-        MAZE[index] = TILE_EMPTY
+    index = MAZE.offset(pacman.position)
+    if MAZE.maze[index] == TILE_DOT:
+        MAZE.maze[index] = TILE_EMPTY
         state["score"] += 1
         WORLD.render_empty_tile(index)
     WORLD.render_score(state["score"])
@@ -57,11 +27,11 @@ def update_world():
     update()
 
     # check for game end
-    if state["score"] == MAX_SCORE:
+    if state["score"] == MAZE.MAX_SCORE:
         WORLD.render_end_game("You won!", "yellow")
         return
     for ghost in ghosts:
-        if abs(pacman.position - ghost.position) < 20:
+        if abs(pacman.position - ghost.position) < TILE_SIZE:
             WORLD.render_end_game("You lost!", "red")
             return
 
@@ -73,21 +43,27 @@ def get_agent_game_state(agent):
     """
     agent_state = {}
     agent_state["score"] = state["score"]
-    agent_state["max_score"] = MAX_SCORE
-    agent_state["surrounding"] = MAZE
+    agent_state["max_score"] = MAZE.MAX_SCORE
+    agent_state["surrounding"] = MAZE.maze
     agent_state["pacman"] = pacman.position
     agent_state["ghosts"] = [ghost.position for ghost in ghosts]
     return agent_state
 
+MAZE = LEVEL1
+WORLD = WorldRendering(MAZE)
+WRITER = Turtle(visible=False)
 
-pacman = HumanPacman(vector(-40, -80), valid)
+
+# level 1
+pacman = HumanPacman(vector(-40, -80), MAZE.valid)
 ghosts = [
-    Ghost(vector(-180, 160), valid),
-    Ghost(vector(-180, -160), valid),
-    Ghost(vector(100, 160), valid),
-    Ghost(vector(100, -160), valid),
+    Ghost(vector(-180, 160), MAZE.valid),
+    Ghost(vector(-180, -160), MAZE.valid),
+    Ghost(vector(100, 160), MAZE.valid),
+    Ghost(vector(100, -160), MAZE.valid),
 ]
 
+state = {"score": 0}
 setup(420, 420, 370, 0) # window
 hideturtle()
 tracer(False)
